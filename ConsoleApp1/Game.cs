@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 using Raylib;
 using static Raylib.Raylib;
+
 namespace ConsoleApp1
 {
     class Game
@@ -10,12 +12,9 @@ namespace ConsoleApp1
 
         readonly SceneObject tankObject = new SceneObject();
         readonly SceneObject turretObject = new SceneObject();
-        //SceneObject RootObject = new SceneObject();
-        readonly SceneObject bulletObject = new SceneObject();
 
         readonly SpriteObject tankSprite = new SpriteObject();
         readonly SpriteObject turretSprite = new SpriteObject();
-        readonly SpriteObject bulletSprite = new SpriteObject();
 
         private long currentTime = 0;
         private long lastTime = 0;
@@ -26,6 +25,8 @@ namespace ConsoleApp1
         public float Tx = 0;
         public float Ty = 0;
 
+        public List<SceneObject> bulletObjects = new List<SceneObject>();
+        public List<SpriteObject> bulletSprites = new List<SpriteObject>();
 
         private float deltaTime = 0.005f;
 
@@ -46,16 +47,12 @@ namespace ConsoleApp1
             turretSprite.SetPosition(turretSprite.Width / 1.5f, turretSprite.Width / 2.0f);//This sets the tank's starting position to 
                                                                                            //it's sprite's width and height.
 
-            bulletSprite.Load("bulletBlue.png");
-            bulletSprite.SetRotate(90 * (float)(Math.PI / 180.0f));
             //bulletSprite.SetPosition(turretSprite.Width + Tx, turretSprite.Height + Ty);
 
             tankObject.AddChild(tankSprite); //This makes "tankObject" become the parent of "tankSprite"
             tankObject.AddChild(turretObject); //This makes "tankObject" become the parent of "turretObject"
             turretObject.AddChild(turretSprite); //This makes "turretObject" become the parent of "tankSprite"
 
-
-            bulletObject.AddChild(bulletSprite); //This makes "bulletObject" become the parent of "bulletSprite"
 
 
             tankObject.SetPosition(GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f); //This sets the tankObject's position to the 
@@ -113,38 +110,39 @@ namespace ConsoleApp1
                 turretObject.Rotate(deltaTime);
             }
 
-            if (IsKeyDown(KeyboardKey.KEY_SPACE)) //Key SpaceBar
+            if (IsKeyPressed(KeyboardKey.KEY_SPACE)) //Key SpaceBar
             {
-                Vector3 facing = new Vector3(turretObject.LocalTransform.m1, turretObject.LocalTransform.m2, 1) * deltaTime * 100;
-                // This creates a Vector3 who's "A" is equal to turretObject's localtransform of m1 multiplied by deltaTime and Speed,
-                // "B" is equal to turretObject's localtransform of m2 multiplied by deltaTime and Speed,
-                // and "C" is equal to 1 multiplied by deltaTime and Speed.
+                SceneObject bulletObject = new SceneObject();
+               
+                SpriteObject bulletSprite = new SpriteObject();
 
 
-                //bulletObject.SetPosition(0, 0);
+                bulletSprites.Add(bulletSprite);
+                bulletObject.AddChild(bulletSprite);
+                turretObject.AddChild(bulletObject);
+                
+                //bulletObject.SetPosition(65, 0);
 
-                Tx = bulletObject.LocalTransform.m7 + bulletObject.LocalTransform.m1;
-                                                                                                // This sets "Tx" to equal the bulletObject's localTransform of m7
-                                                                                                // plus the bulletObject's localTransform of m1.
-                Ty = bulletObject.LocalTransform.m8 + bulletObject.LocalTransform.m2;
-                                                                                                // This sets "Ty" to equal the bulletObject's localTransform of m8
-                                                                                                // plus the bulletObject's localTransform of m2.
+                bulletSprite.Load("bulletBlue.png");
+                bulletSprite.SetRotate(90 * (float)(Math.PI / 180.0f));
+                                                  
+                bulletObject.SetPosition(55f, -6);
 
-                bulletObject.Translate(facing.x, facing.y); //Translates "bulletObject" towards the new Vector3's points for both of its X and Y.
+                tankObject.UpdateTransform();
 
-                turretObject.AddChild(bulletObject); //This makes "turretObject" the parent of "bulletObject"
+                bulletObjects.Add(bulletObject);
 
-                bulletObject.SetPosition(Tx, Ty); //Set's bulletObject's Position to (0,0)
-
-                turretObject.RemoveChild(bulletObject); //Removes Child "bulletObject" from its Parent "turretObject"
-
-                bulletObject.UpdateTransform(); //Initiates UpdateTransform
-
-
-                bulletObject.Draw(); //Initiates Draw
+                turretObject.RemoveChild(bulletObject);
+                bulletObject.UpdateTransform();
             }
-
             tankObject.Update(deltaTime);
+
+            for (int i = 0; i < bulletObjects.Count; i++)
+            {
+                Vector3 facing = new Vector3(bulletObjects[i].LocalTransform.m1, bulletObjects[i].LocalTransform.m2, 1) * deltaTime * 250;
+                bulletObjects[i].Translate(facing.x, facing.y);
+            }
+          
             lastTime = currentTime;
         }
 
@@ -152,8 +150,12 @@ namespace ConsoleApp1
         {
             BeginDrawing(); //Begins the creation of sprites
             ClearBackground(Color.LIGHTGRAY); //Colors the Background to a specified setting
-            DrawText(fps.ToString(), 10, 10, 12, Color.RED); //Creates visible text
+            for(int i = 0; i < bulletSprites.Count; i++)
+            {
+                bulletSprites[i].Draw();
+            }
             tankObject.Draw(); //Creates and displays anything inside of "tankObject"
+            DrawText(fps.ToString(), 10, 10, 12, Color.RED); //Creates visible text
             EndDrawing(); //Ends the creation of sprites
         }
     }

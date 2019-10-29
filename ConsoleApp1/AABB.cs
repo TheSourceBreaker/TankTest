@@ -19,65 +19,65 @@ namespace ConsoleApp1
             this.max = max;
         }
 
-
-        public static Vector3 Min(Vector3 a, Vector3 b)
-        {
-            return new Vector3(Math.Min(a.x, b.x), Math.Min(a.y, b.y), Math.Min(a.z, b.z));
-        }
-
-        public static Vector3 Max(Vector3 a, Vector3 b)
-        {
-            return new Vector3(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
-        }
-
-        public static Vector3 Clamp(Vector3 t, Vector3 a, Vector3 b)
-        {
-            return Max(a, Min(b, t));
-        }
-
-
-        public void Fit(List<Vector3> points)
-        {
-            
-            min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-
-            max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-            
-            foreach (Vector3 p in points)
-            {
-                min = Vector3.Min(min, p);
-
-                max = Vector3.Max(max, p);
-            }
-        }
-
-
-        public bool Overlaps(Vector3 p)
-        {
-            return !(p.x < min.x || p.y < min.y || p.x > max.x || p.y > max.y);
-        }
-
-        public bool Overlaps(AABB other)
-        {
-            return !(max.x < other.min.x || max.y < other.min.y || min.x > other.max.x || min.y > other.max.y);
-        }
-
-        public Vector3 Center()
-        {
+        public Vector3 Center()                 //This is used to find the center of the box by finding the point
+        {                                       //in between the min and max.
             return (min + max) * 0.5f;
         }
 
         public Vector3 Extents()
         {
-            return new Vector3(Math.Abs(max.x - min.x) * 0.5f, Math.Abs(max.y - min.y) * 0.5f, Math.Abs(max.z - min.z) * 0.5f);
+            return new Vector3(Math.Abs(max.x - min.x) * 0.5f,  //Used to calculate half-extents by subtracting 
+                               Math.Abs(max.y - min.y) * 0.5f,  //the min point from the max point, then halving
+                               Math.Abs(max.z - min.z) * 0.5f); //the absolute value for each vector component.
         }
 
-        public Vector3 ClosestPoint(Vector3 p)
-        {
-            return Vector3.Clamp(p, min, max);
+        public List<Vector3> Corners()                      //This method is useful with returning the corners
+        {                                                   // of the box, using min and max.
+            List<Vector3> corners = new List<Vector3>(4);
+            corners[0] = min;
+            corners[1] = new Vector3(min.x, max.y, min.z);
+            corners[2] = max;
+            corners[3] = new Vector3(max.x, min.y, min.z);
+            return corners;
         }
 
-        public bool IsEmpty()
+        public void Fit(List<Vector3> points)              //To fit an AABB to a collection of points we must
+        {                                                  //first invalidate our current min and max by setting
+                                                           //min to the largest value possible, and by setting
+                                                           //max to the smallest value possible. 
+            min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+
+            max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+
+            foreach (Vector3 p in points)
+            {
+                min = Vector3.Min(min, p);                 //Then loop through all of the points and find the 
+                                                           //min() and  max().
+                max = Vector3.Max(max, p);
+            }
+        }
+
+
+        public bool Overlaps(Vector3 p)                    //This is used to check if the point is in range of                                     
+        {                                                  //the min and max corners. (point overlaps an AABB)
+            return !(p.x < min.x || p.y < min.y || p.x > max.x || p.y > max.y);
+        }
+
+
+        public bool Overlaps(AABB other)                   //This is used to check if the point is in range of
+        {                                                  //another AABB. (AABB overlaps another AABB)
+            return !(max.x < other.min.x || max.y < other.min.y || min.x > other.max.x || min.y > other.max.y);
+        }
+
+
+
+        public Vector3 ClosestPoint(Vector3 p)             //This is used to find the closest point on the
+        {                                                  //surface of an arbitrary point. This clamps the
+            return Vector3.Clamp(p, min, max);             //arbitrary point to the min and max corners of
+        }                                                  //the box.
+
+
+        public bool IsEmpty()                                                                   //IsEmpty
         {
             if (float.IsNegativeInfinity(min.x) && float.IsNegativeInfinity(min.y) && float.IsNegativeInfinity(min.z) && float.IsInfinity(max.x) && float.IsInfinity(max.y) && float.IsInfinity(max.z))
             {
@@ -90,7 +90,7 @@ namespace ConsoleApp1
         }
 
 
-        public void Empty()
+        public void Empty()                                                                     //Empty
         {
             min = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
 
@@ -109,8 +109,7 @@ namespace ConsoleApp1
                 return;
             }
 
-            // Examine each of the nine matrix elements
-            // and compute the new AABB
+            
 
 
             if (m.m1 > 0.0f) // m1 = m11 in the formula above

@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         Vector3 origin;
         Vector3 direction;
-        float length;
+        readonly float length;
 
         public Ray()
         {}
@@ -24,7 +24,7 @@ namespace ConsoleApp1
         {
             return Math.Max(a, Math.Min(b, t));
         }
-        public Vector3 closestPoint(Vector3 point)
+        public Vector3 ClosestPoint(Vector3 point)
         {
             Vector3 p = point - origin;
             float t = Clamp(p.Dot(direction), 0, length);

@@ -52,6 +52,7 @@ namespace ConsoleApp1
         {
             if (children.Remove(child) == true)
             {
+                child.localTransform.Set(child.globalTransform);
                 child.parent = null;
             }
         }
