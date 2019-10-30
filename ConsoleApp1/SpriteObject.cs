@@ -11,6 +11,7 @@ namespace ConsoleApp1
         public Image image = new Image();
         public List<SceneObject> corners = new List<SceneObject>();
         public AABB boxCollider = new AABB();
+        public Color color = Color.GREEN;
 
         public float Width
         {
@@ -28,10 +29,10 @@ namespace ConsoleApp1
             corners.Add(new SceneObject());
             corners.Add(new SceneObject());
 
-            corners[0].Translate(-5, 5);
-            corners[1].Translate(-5, -5);
+            corners[0].Translate(5, 5);
+            corners[1].Translate(-5, 5);
             corners[2].Translate(5, -5);
-            corners[3].Translate(5, 5);
+            corners[3].Translate(-5, -5);
 
             AddChild(corners[0]);
             AddChild(corners[1]);
@@ -61,10 +62,10 @@ namespace ConsoleApp1
             DrawTextureEx(texture, new Vector2(globalTransform.m7, globalTransform.m8),
                 rotation * (float)(180.0f / Math.PI), 1, Color.WHITE);
 
-            DrawCircle((int)corners[0].GlobalTransform.m7, (int)corners[0].GlobalTransform.m8, 1, Color.GREEN);
-            DrawCircle((int)corners[1].GlobalTransform.m7, (int)corners[1].GlobalTransform.m8, 1, Color.GREEN);
-            DrawCircle((int)corners[2].GlobalTransform.m7, (int)corners[2].GlobalTransform.m8, 1, Color.GREEN);
-            DrawCircle((int)corners[3].GlobalTransform.m7, (int)corners[3].GlobalTransform.m8, 1, Color.GREEN);
+            DrawCircle((int)corners[0].GlobalTransform.m7, (int)corners[0].GlobalTransform.m8, 1, color);
+            DrawCircle((int)corners[1].GlobalTransform.m7, (int)corners[1].GlobalTransform.m8, 1, color);
+            DrawCircle((int)corners[2].GlobalTransform.m7, (int)corners[2].GlobalTransform.m8, 1, color);
+            DrawCircle((int)corners[3].GlobalTransform.m7, (int)corners[3].GlobalTransform.m8, 1, color);
 
 
             

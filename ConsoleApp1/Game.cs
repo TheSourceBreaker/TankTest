@@ -13,6 +13,9 @@ namespace ConsoleApp1
         readonly SceneObject tankObject = new SceneObject();
         readonly SceneObject turretObject = new SceneObject();
 
+        SceneObject boxObject = new SceneObject();
+        SpriteObject boxSprite = new SpriteObject();
+
         readonly SpriteObject tankSprite = new SpriteObject();
         readonly SpriteObject turretSprite = new SpriteObject();
 
@@ -52,14 +55,26 @@ namespace ConsoleApp1
             turretSprite.SetPosition(turretSprite.Width / 1.5f, turretSprite.Width / 2.0f);//This sets the tank's starting position to 
                                                                                            //it's sprite's width and height.
 
-            //bulletSprite.SetPosition(turretSprite.Width + Tx, turretSprite.Height + Ty);
+            turretSprite.corners[0].SetPosition(turretSprite.Width / 2, turretSprite.Height / 2);
+            turretSprite.corners[1].SetPosition(-turretSprite.Width / 2 + 10, turretSprite.Height / 2 + 10);
+            turretSprite.corners[2].SetPosition(turretSprite.Width / 2 + 8, -turretSprite.Height / 2 + 1);
+            turretSprite.corners[3].SetPosition(-turretSprite.Width / 2 + 10, -turretSprite.Height / 2 + 10);
+
+
+            boxSprite.SetPosition(boxSprite.Width / 2, boxSprite.Height / 2);
+
+            boxSprite.corners[0].SetPosition(40, 40);
+            boxSprite.corners[1].SetPosition(-40, 40);
+            boxSprite.corners[2].SetPosition(40, -40);
+            boxSprite.corners[3].SetPosition(-40, -40);
+
 
             tankObject.AddChild(tankSprite); //This makes "tankObject" become the parent of "tankSprite"
             tankObject.AddChild(turretObject); //This makes "tankObject" become the parent of "turretObject"
             turretObject.AddChild(turretSprite); //This makes "turretObject" become the parent of "tankSprite"
+            boxObject.AddChild(boxSprite);
 
-
-
+            boxObject.SetPosition(500,240);
             tankObject.SetPosition(GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f); //This sets the tankObject's position to the 
                                                                                        //Screen's Width and Height.
         }
@@ -80,7 +95,7 @@ namespace ConsoleApp1
                 timer -= 1;
             }
             frames++;
-
+            
             if (IsKeyDown(KeyboardKey.KEY_A))   //Key A
             {
                 tankObject.Rotate(-deltaTime);
@@ -131,6 +146,11 @@ namespace ConsoleApp1
                                                   
                 bulletObject.SetPosition(55f, -6);
 
+                bulletSprite.corners[0].SetPosition(bulletSprite.Width, bulletSprite.Height);
+                bulletSprite.corners[1].SetPosition(-bulletSprite.Width + 9, bulletSprite.Height);
+                bulletSprite.corners[2].SetPosition(bulletSprite.Width, -bulletSprite.Height + 25);
+                bulletSprite.corners[3].SetPosition(-bulletSprite.Width + 10, -bulletSprite.Height + 25);
+
                 tankObject.UpdateTransform();
 
                 bulletObjects.Add(bulletObject);
@@ -140,12 +160,32 @@ namespace ConsoleApp1
             }
             tankObject.Update(deltaTime);
 
+            boxObject.Update(deltaTime);
+
             for (int i = 0; i < bulletObjects.Count; i++)
             {
                 Vector3 facing = new Vector3(bulletObjects[i].LocalTransform.m1, bulletObjects[i].LocalTransform.m2, 1) * deltaTime * 250;
                 bulletObjects[i].Translate(facing.x, facing.y);
+                bulletObjects[i].Update(deltaTime);
             }
-          
+
+           
+            for (int i = 0; i < bulletSprites.Count; i++)
+            {
+
+                if (bulletSprites[i].boxCollider.Overlaps(boxSprite.boxCollider))
+                {
+                    boxSprite.color = Color.YELLOW;
+                    
+                    break;
+                }
+                else
+                {
+                    boxSprite.color = Color.BLUE;
+
+                }
+            }
+
             lastTime = currentTime;
         }
 
@@ -157,6 +197,7 @@ namespace ConsoleApp1
             {
                 bulletSprites[i].Draw();
             }
+            boxObject.Draw();
             tankObject.Draw(); //Creates and displays anything inside of "tankObject"
             DrawText(fps.ToString(), 10, 10, 12, Color.RED); //Creates visible text
             EndDrawing(); //Ends the creation of sprites
