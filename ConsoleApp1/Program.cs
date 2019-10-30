@@ -29,7 +29,6 @@ namespace ConsoleApp1
             {
                 game.Update();
                 game.Draw();
-
             }
 
             game.Shutdown();

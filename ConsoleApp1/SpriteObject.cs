@@ -1,6 +1,7 @@
 ﻿using System;
 using Raylib;
 using static Raylib.Raylib;
+using System.Collections.Generic;
 
 namespace ConsoleApp1
 {
@@ -8,6 +9,8 @@ namespace ConsoleApp1
     {
         public Texture2D texture = new Texture2D();
         public Image image = new Image();
+        public List<SceneObject> corners = new List<SceneObject>();
+        public AABB boxCollider = new AABB();
 
         public float Width
         {
@@ -19,7 +22,32 @@ namespace ConsoleApp1
         }
 
         public SpriteObject()
-        { }
+        {
+            corners.Add(new SceneObject());
+            corners.Add(new SceneObject());
+            corners.Add(new SceneObject());
+            corners.Add(new SceneObject());
+
+            corners[0].Translate(-5, 5);
+            corners[1].Translate(-5, -5);
+            corners[2].Translate(5, -5);
+            corners[3].Translate(5, 5);
+
+            AddChild(corners[0]);
+            AddChild(corners[1]);
+            AddChild(corners[2]);
+            AddChild(corners[3]);
+        }
+
+        public override void OnUpdate(float deltaTime)
+        {
+            List<Vector3> cornerpos = new List<Vector3>();
+            cornerpos.Add(corners[0].Position);
+            cornerpos.Add(corners[1].Position);
+            cornerpos.Add(corners[2].Position);
+            cornerpos.Add(corners[3].Position);
+            boxCollider.Fit(cornerpos);
+        }
 
         public void Load(string filename)
         {
@@ -32,6 +60,15 @@ namespace ConsoleApp1
 
             DrawTextureEx(texture, new Vector2(globalTransform.m7, globalTransform.m8),
                 rotation * (float)(180.0f / Math.PI), 1, Color.WHITE);
+
+            DrawCircle((int)corners[0].GlobalTransform.m7, (int)corners[0].GlobalTransform.m8, 1, Color.GREEN);
+            DrawCircle((int)corners[1].GlobalTransform.m7, (int)corners[1].GlobalTransform.m8, 1, Color.GREEN);
+            DrawCircle((int)corners[2].GlobalTransform.m7, (int)corners[2].GlobalTransform.m8, 1, Color.GREEN);
+            DrawCircle((int)corners[3].GlobalTransform.m7, (int)corners[3].GlobalTransform.m8, 1, Color.GREEN);
+
+
+            
+            boxCollider.OnDraw();
         }
 
     }

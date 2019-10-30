@@ -41,6 +41,11 @@ namespace ConsoleApp1
             tankSprite.SetPosition(-tankSprite.Width / 2.0f, tankSprite.Height / 2.0f); //This sets the tank's starting position to 
                                                                                         //it's sprite's width and height.
 
+            tankSprite.corners[0].SetPosition(tankSprite.Width / 2 + 41, tankSprite.Height / 2 + 40);
+            tankSprite.corners[1].SetPosition(-tankSprite.Width / 2 + 41, tankSprite.Height / 2 + 40);
+            tankSprite.corners[2].SetPosition(tankSprite.Width / 2 + 41, -tankSprite.Height / 2 + 40);
+            tankSprite.corners[3].SetPosition(-tankSprite.Width / 2 + 41, -tankSprite.Height / 2 + 40);
+
 
             turretSprite.Load("barrelBlue.png");    //This loads the image of the tank's barrel
             turretSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));  //This tells command to have ths image rotated by -90 degrees.
@@ -120,8 +125,6 @@ namespace ConsoleApp1
                 bulletSprites.Add(bulletSprite);
                 bulletObject.AddChild(bulletSprite);
                 turretObject.AddChild(bulletObject);
-                
-                //bulletObject.SetPosition(65, 0);
 
                 bulletSprite.Load("bulletBlue.png");
                 bulletSprite.SetRotate(90 * (float)(Math.PI / 180.0f));
@@ -149,7 +152,7 @@ namespace ConsoleApp1
         public void Draw()
         {
             BeginDrawing(); //Begins the creation of sprites
-            ClearBackground(Color.LIGHTGRAY); //Colors the Background to a specified setting
+            ClearBackground(Color.BROWN); //Colors the Background to a specified setting
             for(int i = 0; i < bulletSprites.Count; i++)
             {
                 bulletSprites[i].Draw();

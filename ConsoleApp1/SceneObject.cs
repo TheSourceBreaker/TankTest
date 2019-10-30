@@ -23,6 +23,14 @@ namespace ConsoleApp1
             get { return globalTransform; }
         }
 
+        public Vector3 Position
+        {
+            get
+            {
+                return new Vector3(globalTransform.m7, globalTransform.m8, 1);
+            }
+        }
+
         public SceneObject()
         { }
 
